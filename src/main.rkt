@@ -8,6 +8,7 @@
 
 (define WIDTH 800)
 (define HEIGHT 500)
+(define ANIMATION-STATE 3)
 
 (define (random-location width height)
   (tree-location (random (- width (image-width TREE))) (random-for-height height)))
@@ -38,18 +39,24 @@
 (define bckround (generate-background 100))
 
 (define (tock ws)
-  (+ ws 3))
+  (+ ws ANIMATION-STATE))
 
 (define (render ws)
   (place-image
    CAR ws (/ HEIGHT 2)
    bckround))
 
+(define (hyper x-position-of-car x-mouse y-mouse me)
+  (cond
+    [(string=? "button-down" me) x-mouse]
+    [else x-position-of-car]))
+
 (define (stop ws)
   (>= ws (- WIDTH (* WHEEL-RADIUS 4))))
 
-(big-bang 0
-          [on-tick tock]
-          [to-draw render]
-          [stop-when stop])
-
+(define (start-animation)
+  (big-bang 0
+            [on-tick tock]
+            [to-draw render]
+            [on-mouse hyper]
+            [stop-when stop]))
